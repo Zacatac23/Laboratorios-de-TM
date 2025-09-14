@@ -218,8 +218,8 @@ Símbolos anulables encontrados: ['A', 'B', 'C', 'S']
 
 ## Autor
 
-[Tu nombre]  
-[Tu carnet]  
+Jonathan Zacarias , Hugo Barillas  
+231104 , 
 Universidad del Valle de Guatemala
 
 ## Notas
