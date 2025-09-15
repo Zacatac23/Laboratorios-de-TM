@@ -11,16 +11,13 @@ Este laboratorio implementa algoritmos para la simplificación de gramáticas li
 ## Estructura del Repositorio
 
 ```
-├── README.md
-├── ejercicio1/
-│   └── ejercicio1_solucion.pdf
-├── ejercicio2/
-│   ├── cfg_processor.py
-│   ├── grammar1.txt
-│   ├── grammar2.txt
-│   └── requirements.txt
-└── docs/
-    └── demo_video.md
+.
+├── cfg_processor.py
+├── Documento
+│   └── lab7.pdf
+├── grammar1.txt
+├── grammar2.txt
+
 ```
 
 ## Ejercicio 1 (50%)
@@ -31,7 +28,7 @@ Transformación manual de dos CFGs a través de los siguientes pasos:
 3. Eliminación de símbolos inútiles
 4. Conversión a Forma Normal de Chomsky (CNF)
 
-**Archivo**: `ejercicio1/ejercicio1_solucion.pdf`
+**Archivo**: `Documento/lab7.pdf`
 
 ## Ejercicio 2 (50%)
 
@@ -112,7 +109,7 @@ D -> A | B | ab
 
 
 
-**Link del video**: [Agregar link de YouTube aquí]
+**Link del video**: https://www.youtube.com/watch?v=ECAItk06u-4
 
 
 
