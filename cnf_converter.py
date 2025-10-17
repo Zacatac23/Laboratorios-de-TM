@@ -6,7 +6,7 @@ Autores: [Persona 1]
 Fecha: Octubre 2024
 """
 
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Tuple
 
 
 class CNFConverter:
@@ -212,6 +212,112 @@ class CNFConverter:
         return new_grammar
     
     @staticmethod
+    def find_productive_symbols(grammar: Dict[str, List[List[str]]]) -> Set[str]:
+        """
+        Encuentra todos los símbolos productivos en la gramática.
+        Un símbolo es productivo si puede derivar una cadena de terminales.
+        
+        Args:
+            grammar: Diccionario con la gramática
+            
+        Returns:
+            Conjunto de símbolos productivos
+        """
+        productive = set()
+        changed = True
+        
+        # Inicialmente, todos los no-terminales que tienen producciones
+        # directas a terminales son productivos
+        for nt, prods in grammar.items():
+            for prod in prods:
+                if all(CNFConverter.is_terminal(sym) for sym in prod):
+                    productive.add(nt)
+                    break
+        
+        # Iterativamente añadir no-terminales que pueden derivar
+        # a cadenas de símbolos productivos
+        while changed:
+            changed = False
+            
+            for nt, prods in grammar.items():
+                if nt in productive:
+                    continue
+                
+                for prod in prods:
+                    if all(sym in productive or CNFConverter.is_terminal(sym) for sym in prod):
+                        productive.add(nt)
+                        changed = True
+                        break
+        
+        return productive
+    
+    @staticmethod
+    def find_reachable_symbols(grammar: Dict[str, List[List[str]]], start_symbol: str) -> Set[str]:
+        """
+        Encuentra todos los símbolos alcanzables desde el símbolo inicial.
+        
+        Args:
+            grammar: Diccionario con la gramática
+            start_symbol: Símbolo inicial de la gramática
+            
+        Returns:
+            Conjunto de símbolos alcanzables
+        """
+        reachable = {start_symbol}
+        stack = [start_symbol]
+        
+        while stack:
+            current = stack.pop()
+            
+            if current in grammar:
+                for prod in grammar[current]:
+                    for symbol in prod:
+                        if not CNFConverter.is_terminal(symbol) and symbol not in reachable:
+                            reachable.add(symbol)
+                            stack.append(symbol)
+        
+        return reachable
+    
+    @staticmethod
+    def eliminate_useless(grammar: Dict[str, List[List[str]]], start_symbol: str = 'S') -> Dict[str, List[List[str]]]:
+        """
+        Elimina producciones inútiles de la gramática.
+        Una producción es inútil si contiene símbolos no productivos o no alcanzables.
+        
+        Args:
+            grammar: Gramática original
+            start_symbol: Símbolo inicial
+            
+        Returns:
+            Nueva gramática sin producciones inútiles
+        """
+        # Paso 1: Encontrar símbolos productivos
+        productive = CNFConverter.find_productive_symbols(grammar)
+        
+        # Paso 1.1: Eliminar no-terminales no productivos y sus producciones
+        productive_grammar = {}
+        for nt, prods in grammar.items():
+            if nt in productive:
+                productive_grammar[nt] = []
+                for prod in prods:
+                    if all(sym in productive or CNFConverter.is_terminal(sym) for sym in prod):
+                        productive_grammar[nt].append(prod)
+        
+        # Paso 2: Encontrar símbolos alcanzables desde el símbolo inicial
+        reachable = CNFConverter.find_reachable_symbols(productive_grammar, start_symbol)
+        
+        # Paso 2.1: Eliminar no-terminales no alcanzables
+        useful_grammar = {}
+        for nt, prods in productive_grammar.items():
+            if nt in reachable:
+                useful_grammar[nt] = []
+                for prod in prods:
+                    if all(CNFConverter.is_terminal(sym) or sym in reachable for sym in prod):
+                        useful_grammar[nt].append(prod)
+        
+        return useful_grammar
+    
+    @staticmethod
     def normalize_terminals(grammar: Dict[str, List[List[str]]]) -> Dict[str, List[List[str]]]:
         """
         Reemplaza terminales en producciones mixtas por nuevos no-terminales.
@@ -233,7 +339,7 @@ class CNFConverter:
                 if len(prod) == 1 and CNFConverter.is_terminal(prod[0]):
                     new_grammar[nt].append(prod)
                 
-                elif len(prod) == 2:
+                elif len(prod) >= 2:
                     new_prod = []
                     
                     for symbol in prod:
@@ -290,12 +396,13 @@ class CNFConverter:
         return new_grammar
     
     @staticmethod
-    def convert_to_cnf(grammar: Dict[str, List[List[str]]]) -> Dict[str, List[List[str]]]:
+    def convert_to_cnf(grammar: Dict[str, List[List[str]]], start_symbol: str = 'S') -> Dict[str, List[List[str]]]:
         """
         Convierte una gramática CFG completa a Forma Normal de Chomsky.
         
         Args:
             grammar: Gramática CFG original
+            start_symbol: Símbolo inicial de la gramática
             
         Returns:
             Gramática equivalente en CNF
@@ -307,10 +414,13 @@ class CNFConverter:
         print("   Paso 2: Eliminando producciones unitarias")
         g = CNFConverter.eliminate_unit_productions(g)
         
-        print("   Paso 3: Normalizando terminales")
+        print("   Paso 3: Eliminando producciones inútiles")
+        g = CNFConverter.eliminate_useless(g, start_symbol)
+        
+        print("   Paso 4: Normalizando terminales")
         g = CNFConverter.normalize_terminals(g)
         
-        print("   Paso 4: Descomponiendo producciones largas")
+        print("   Paso 5: Descomponiendo producciones largas")
         g = CNFConverter.break_long_productions(g)
         
         print("   ✓ Conversión completada")
@@ -347,10 +457,15 @@ if __name__ == "__main__":
         'NP': [['Det', 'N'], ['he']],
         'V': [['eats']],
         'Det': [['a']],
-        'N': [['cake']]
+        'N': [['cake']],
+        'U': [['U']]  # Producción inútil (no productiva)
     }
     
     CNFConverter.print_grammar(grammar, "Gramática de Ejemplo")
     
     is_cnf = CNFConverter.is_in_cnf(grammar)
     print(f"\n¿Está en CNF? {'✓ Sí' if is_cnf else '✗ No'}")
+    
+    # Demostrar eliminación de producciones inútiles
+    useful_grammar = CNFConverter.eliminate_useless(grammar)
+    CNFConverter.print_grammar(useful_grammar, "Gramática sin Producciones Inútiles")
