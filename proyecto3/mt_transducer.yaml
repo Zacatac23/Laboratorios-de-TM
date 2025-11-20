@@ -1,0 +1,556 @@
+# Máquina de Turing Alteradora (Transductor)
+# Duplica una cadena: abc -> abcabc
+# Más simple y funcional que invertir
+
+q_states:
+  q_list:
+    - '0'   # Estado inicial
+    - '1'   # Leyó 'a', va a copiar
+    - '2'   # Leyó 'b', va a copiar
+    - '3'   # Leyó 'c', va a copiar
+    - '4'   # Ir al final
+    - '5'   # Escribir en el final
+    - '6'   # Regresar al inicio
+    - '7'   # Buscar siguiente símbolo
+    - '8'   # Verificación final
+    - '9'   # Estado final
+  initial: '0'
+  final: '9'
+
+alphabet:
+  - a
+  - b
+  - c
+
+tape_alphabet:
+  - a
+  - b
+  - c
+  - X    # Marca para 'a' procesada
+  - Y    # Marca para 'b' procesada
+  - Z    # Marca para 'c' procesada
+  - '#'  # Separador
+  -      # Blanco
+
+delta:
+  # Estado 0: Leer primer símbolo
+  - params:
+      initial_state: '0'
+      mem_cache_value:
+      tape_input: a
+    output:
+      final_state: '1'
+      mem_cache_value: a
+      tape_output: X
+      tape_displacement: R
+  
+  - params:
+      initial_state: '0'
+      mem_cache_value:
+      tape_input: b
+    output:
+      final_state: '2'
+      mem_cache_value: b
+      tape_output: Y
+      tape_displacement: R
+  
+  - params:
+      initial_state: '0'
+      mem_cache_value:
+      tape_input: c
+    output:
+      final_state: '3'
+      mem_cache_value: c
+      tape_output: Z
+      tape_displacement: R
+  
+  - params:
+      initial_state: '0'
+      mem_cache_value:
+      tape_input: X
+    output:
+      final_state: '7'
+      mem_cache_value:
+      tape_output: X
+      tape_displacement: R
+  
+  - params:
+      initial_state: '0'
+      mem_cache_value:
+      tape_input: Y
+    output:
+      final_state: '7'
+      mem_cache_value:
+      tape_output: Y
+      tape_displacement: R
+  
+  - params:
+      initial_state: '0'
+      mem_cache_value:
+      tape_input: Z
+    output:
+      final_state: '7'
+      mem_cache_value:
+      tape_output: Z
+      tape_displacement: R
+  
+  # Estados 1,2,3: Ir al final con símbolo en cache
+  - params:
+      initial_state: '1'
+      mem_cache_value: a
+      tape_input: a
+    output:
+      final_state: '1'
+      mem_cache_value: a
+      tape_output: a
+      tape_displacement: R
+  
+  - params:
+      initial_state: '1'
+      mem_cache_value: a
+      tape_input: b
+    output:
+      final_state: '1'
+      mem_cache_value: a
+      tape_output: b
+      tape_displacement: R
+  
+  - params:
+      initial_state: '1'
+      mem_cache_value: a
+      tape_input: c
+    output:
+      final_state: '1'
+      mem_cache_value: a
+      tape_output: c
+      tape_displacement: R
+  
+  - params:
+      initial_state: '1'
+      mem_cache_value: a
+      tape_input: X
+    output:
+      final_state: '1'
+      mem_cache_value: a
+      tape_output: X
+      tape_displacement: R
+  
+  - params:
+      initial_state: '1'
+      mem_cache_value: a
+      tape_input: Y
+    output:
+      final_state: '1'
+      mem_cache_value: a
+      tape_output: Y
+      tape_displacement: R
+  
+  - params:
+      initial_state: '1'
+      mem_cache_value: a
+      tape_input: Z
+    output:
+      final_state: '1'
+      mem_cache_value: a
+      tape_output: Z
+      tape_displacement: R
+  
+  - params:
+      initial_state: '1'
+      mem_cache_value: a
+      tape_input:
+    output:
+      final_state: '5'
+      mem_cache_value: a
+      tape_output:
+      tape_displacement: S
+  
+  - params:
+      initial_state: '2'
+      mem_cache_value: b
+      tape_input: a
+    output:
+      final_state: '2'
+      mem_cache_value: b
+      tape_output: a
+      tape_displacement: R
+  
+  - params:
+      initial_state: '2'
+      mem_cache_value: b
+      tape_input: b
+    output:
+      final_state: '2'
+      mem_cache_value: b
+      tape_output: b
+      tape_displacement: R
+  
+  - params:
+      initial_state: '2'
+      mem_cache_value: b
+      tape_input: c
+    output:
+      final_state: '2'
+      mem_cache_value: b
+      tape_output: c
+      tape_displacement: R
+  
+  - params:
+      initial_state: '2'
+      mem_cache_value: b
+      tape_input: X
+    output:
+      final_state: '2'
+      mem_cache_value: b
+      tape_output: X
+      tape_displacement: R
+  
+  - params:
+      initial_state: '2'
+      mem_cache_value: b
+      tape_input: Y
+    output:
+      final_state: '2'
+      mem_cache_value: b
+      tape_output: Y
+      tape_displacement: R
+  
+  - params:
+      initial_state: '2'
+      mem_cache_value: b
+      tape_input: Z
+    output:
+      final_state: '2'
+      mem_cache_value: b
+      tape_output: Z
+      tape_displacement: R
+  
+  - params:
+      initial_state: '2'
+      mem_cache_value: b
+      tape_input:
+    output:
+      final_state: '5'
+      mem_cache_value: b
+      tape_output:
+      tape_displacement: S
+  
+  - params:
+      initial_state: '3'
+      mem_cache_value: c
+      tape_input: a
+    output:
+      final_state: '3'
+      mem_cache_value: c
+      tape_output: a
+      tape_displacement: R
+  
+  - params:
+      initial_state: '3'
+      mem_cache_value: c
+      tape_input: b
+    output:
+      final_state: '3'
+      mem_cache_value: c
+      tape_output: b
+      tape_displacement: R
+  
+  - params:
+      initial_state: '3'
+      mem_cache_value: c
+      tape_input: c
+    output:
+      final_state: '3'
+      mem_cache_value: c
+      tape_output: c
+      tape_displacement: R
+  
+  - params:
+      initial_state: '3'
+      mem_cache_value: c
+      tape_input: X
+    output:
+      final_state: '3'
+      mem_cache_value: c
+      tape_output: X
+      tape_displacement: R
+  
+  - params:
+      initial_state: '3'
+      mem_cache_value: c
+      tape_input: Y
+    output:
+      final_state: '3'
+      mem_cache_value: c
+      tape_output: Y
+      tape_displacement: R
+  
+  - params:
+      initial_state: '3'
+      mem_cache_value: c
+      tape_input: Z
+    output:
+      final_state: '3'
+      mem_cache_value: c
+      tape_output: Z
+      tape_displacement: R
+  
+  - params:
+      initial_state: '3'
+      mem_cache_value: c
+      tape_input:
+    output:
+      final_state: '5'
+      mem_cache_value: c
+      tape_output:
+      tape_displacement: S
+  
+  # Estado 5: Escribir símbolo del cache
+  - params:
+      initial_state: '5'
+      mem_cache_value: a
+      tape_input:
+    output:
+      final_state: '6'
+      mem_cache_value:
+      tape_output: a
+      tape_displacement: L
+  
+  - params:
+      initial_state: '5'
+      mem_cache_value: b
+      tape_input:
+    output:
+      final_state: '6'
+      mem_cache_value:
+      tape_output: b
+      tape_displacement: L
+  
+  - params:
+      initial_state: '5'
+      mem_cache_value: c
+      tape_input:
+    output:
+      final_state: '6'
+      mem_cache_value:
+      tape_output: c
+      tape_displacement: L
+  
+  # Estado 6: Regresar al inicio
+  - params:
+      initial_state: '6'
+      mem_cache_value:
+      tape_input: a
+    output:
+      final_state: '6'
+      mem_cache_value:
+      tape_output: a
+      tape_displacement: L
+  
+  - params:
+      initial_state: '6'
+      mem_cache_value:
+      tape_input: b
+    output:
+      final_state: '6'
+      mem_cache_value:
+      tape_output: b
+      tape_displacement: L
+  
+  - params:
+      initial_state: '6'
+      mem_cache_value:
+      tape_input: c
+    output:
+      final_state: '6'
+      mem_cache_value:
+      tape_output: c
+      tape_displacement: L
+  
+  - params:
+      initial_state: '6'
+      mem_cache_value:
+      tape_input: X
+    output:
+      final_state: '6'
+      mem_cache_value:
+      tape_output: X
+      tape_displacement: L
+  
+  - params:
+      initial_state: '6'
+      mem_cache_value:
+      tape_input: Y
+    output:
+      final_state: '6'
+      mem_cache_value:
+      tape_output: Y
+      tape_displacement: L
+  
+  - params:
+      initial_state: '6'
+      mem_cache_value:
+      tape_input: Z
+    output:
+      final_state: '6'
+      mem_cache_value:
+      tape_output: Z
+      tape_displacement: L
+  
+  - params:
+      initial_state: '6'
+      mem_cache_value:
+      tape_input:
+    output:
+      final_state: '0'
+      mem_cache_value:
+      tape_output:
+      tape_displacement: R
+  
+  # Estado 7: Buscar siguiente sin marcar
+  - params:
+      initial_state: '7'
+      mem_cache_value:
+      tape_input: X
+    output:
+      final_state: '7'
+      mem_cache_value:
+      tape_output: X
+      tape_displacement: R
+  
+  - params:
+      initial_state: '7'
+      mem_cache_value:
+      tape_input: Y
+    output:
+      final_state: '7'
+      mem_cache_value:
+      tape_output: Y
+      tape_displacement: R
+  
+  - params:
+      initial_state: '7'
+      mem_cache_value:
+      tape_input: Z
+    output:
+      final_state: '7'
+      mem_cache_value:
+      tape_output: Z
+      tape_displacement: R
+  
+  - params:
+      initial_state: '7'
+      mem_cache_value:
+      tape_input: a
+    output:
+      final_state: '0'
+      mem_cache_value:
+      tape_output: a
+      tape_displacement: S
+  
+  - params:
+      initial_state: '7'
+      mem_cache_value:
+      tape_input: b
+    output:
+      final_state: '0'
+      mem_cache_value:
+      tape_output: b
+      tape_displacement: S
+  
+  - params:
+      initial_state: '7'
+      mem_cache_value:
+      tape_input: c
+    output:
+      final_state: '0'
+      mem_cache_value:
+      tape_output: c
+      tape_displacement: S
+  
+  - params:
+      initial_state: '7'
+      mem_cache_value:
+      tape_input:
+    output:
+      final_state: '8'
+      mem_cache_value:
+      tape_output:
+      tape_displacement: L
+  
+  # Estado 8: Limpiar marcas
+  - params:
+      initial_state: '8'
+      mem_cache_value:
+      tape_input: X
+    output:
+      final_state: '8'
+      mem_cache_value:
+      tape_output: a
+      tape_displacement: L
+  
+  - params:
+      initial_state: '8'
+      mem_cache_value:
+      tape_input: Y
+    output:
+      final_state: '8'
+      mem_cache_value:
+      tape_output: b
+      tape_displacement: L
+  
+  - params:
+      initial_state: '8'
+      mem_cache_value:
+      tape_input: Z
+    output:
+      final_state: '8'
+      mem_cache_value:
+      tape_output: c
+      tape_displacement: L
+  
+  - params:
+      initial_state: '8'
+      mem_cache_value:
+      tape_input: a
+    output:
+      final_state: '8'
+      mem_cache_value:
+      tape_output: a
+      tape_displacement: L
+  
+  - params:
+      initial_state: '8'
+      mem_cache_value:
+      tape_input: b
+    output:
+      final_state: '8'
+      mem_cache_value:
+      tape_output: b
+      tape_displacement: L
+  
+  - params:
+      initial_state: '8'
+      mem_cache_value:
+      tape_input: c
+    output:
+      final_state: '8'
+      mem_cache_value:
+      tape_output: c
+      tape_displacement: L
+  
+  - params:
+      initial_state: '8'
+      mem_cache_value:
+      tape_input:
+    output:
+      final_state: '9'
+      mem_cache_value:
+      tape_output:
+      tape_displacement: R
+
+simulation_strings:
+  - abcab      # Se duplica: abcababcab
+  - aabbc      # Se duplica: aabbcaabbc
+  - abcba      # Se duplica: abcbaabcba
+  - aaabbbccc  # Se duplica: aaabbbcccaaabbbccc

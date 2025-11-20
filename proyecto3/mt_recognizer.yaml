@@ -1,0 +1,158 @@
+# Máquina de Turing Reconocedora
+# Reconoce el lenguaje L = {a^n b^n | n >= 1}
+# Esta MT verifica que haya el mismo número de a's que de b's
+
+q_states:
+  q_list:
+    - '0'  # Estado inicial
+    - '1'  # Buscando 'a' para marcar
+    - '2'  # Marcó 'a', busca 'b' correspondiente
+    - '3'  # Marcó 'b', regresa al inicio
+    - '4'  # Verificación final
+    - '5'  # Estado de aceptación
+  initial: '0'
+  final: '5'
+
+alphabet:
+  - a
+  - b
+
+tape_alphabet:
+  - a
+  - b
+  - X  # Marca para 'a' procesada
+  - Y  # Marca para 'b' procesada
+  -    # Símbolo blanco (blank)
+
+delta:
+  # Estado 0: Inicio
+  - params:
+      initial_state: '0'
+      mem_cache_value:
+      tape_input: a
+    output:
+      final_state: '1'
+      mem_cache_value:
+      tape_output: X
+      tape_displacement: R
+  
+  # Estado 1: Buscar primera 'b'
+  - params:
+      initial_state: '1'
+      mem_cache_value:
+      tape_input: a
+    output:
+      final_state: '1'
+      mem_cache_value:
+      tape_output: a
+      tape_displacement: R
+  
+  - params:
+      initial_state: '1'
+      mem_cache_value:
+      tape_input: Y
+    output:
+      final_state: '1'
+      mem_cache_value:
+      tape_output: Y
+      tape_displacement: R
+  
+  - params:
+      initial_state: '1'
+      mem_cache_value:
+      tape_input: b
+    output:
+      final_state: '2'
+      mem_cache_value:
+      tape_output: Y
+      tape_displacement: L
+  
+  # Estado 2: Regresar al inicio
+  - params:
+      initial_state: '2'
+      mem_cache_value:
+      tape_input: a
+    output:
+      final_state: '2'
+      mem_cache_value:
+      tape_output: a
+      tape_displacement: L
+  
+  - params:
+      initial_state: '2'
+      mem_cache_value:
+      tape_input: Y
+    output:
+      final_state: '2'
+      mem_cache_value:
+      tape_output: Y
+      tape_displacement: L
+  
+  - params:
+      initial_state: '2'
+      mem_cache_value:
+      tape_input: X
+    output:
+      final_state: '3'
+      mem_cache_value:
+      tape_output: X
+      tape_displacement: R
+  
+  # Estado 3: Buscar siguiente 'a' sin marcar
+  - params:
+      initial_state: '3'
+      mem_cache_value:
+      tape_input: X
+    output:
+      final_state: '3'
+      mem_cache_value:
+      tape_output: X
+      tape_displacement: R
+  
+  - params:
+      initial_state: '3'
+      mem_cache_value:
+      tape_input: a
+    output:
+      final_state: '1'
+      mem_cache_value:
+      tape_output: X
+      tape_displacement: R
+  
+  - params:
+      initial_state: '3'
+      mem_cache_value:
+      tape_input: Y
+    output:
+      final_state: '4'
+      mem_cache_value:
+      tape_output: Y
+      tape_displacement: R
+  
+  # Estado 4: Verificación final - solo deben quedar Y's
+  - params:
+      initial_state: '4'
+      mem_cache_value:
+      tape_input: Y
+    output:
+      final_state: '4'
+      mem_cache_value:
+      tape_output: Y
+      tape_displacement: R
+  
+  - params:
+      initial_state: '4'
+      mem_cache_value:
+      tape_input:
+    output:
+      final_state: '5'
+      mem_cache_value:
+      tape_output:
+      tape_displacement: S
+
+simulation_strings:
+  - aaabbb     # Aceptada
+  - aaaaabbbbb # Aceptada
+  - aabb       # Rechazada (longitud 4, pero incluida para demostración)
+  - aaabb      # Rechazada
+  - aabbb      # Rechazada
