@@ -71,7 +71,8 @@ class TuringMachine:
     
     def _initialize_tape(self, input_string: str) -> List[str]:
         """Inicializa la cinta con el input"""
-        tape = list(input_string)
+        # Agregar un blanco al inicio para que la MT pueda detectar el inicio
+        tape = [None] + list(input_string)
         # Agregar espacios en blanco al final
         tape.extend([None] * 10)
         return tape
@@ -90,7 +91,7 @@ class TuringMachine:
         """Simula la ejecución de la MT con la cadena de entrada"""
         tape = self._initialize_tape(input_string)
         current_state = self.initial_state
-        head_position = 0
+        head_position = 1  # Empezar en posición 1 porque hay un blanco al inicio
         mem_cache = None
         
         ids_list = []
